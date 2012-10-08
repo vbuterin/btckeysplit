@@ -1,4 +1,4 @@
-import split, hashlib, random, sys
+import shamir, bitcoin, hashlib, random, sys
 
 def get_format(userinput):
    return {'integer': 10, '10': 10, 'i': 10,
@@ -32,7 +32,7 @@ def split_interface(args):
    # Splits a key
    # Grammar: python main.py --split [privkey] [n] [k (1<=k<=n)]
    if len(args) == 0:
-     args.append(split.trial_and_error_decode(raw_input(
+     args.append(bitcoin.trial_and_error_decode(raw_input(
             "Enter private key (any format): ")))
    if len(args) == 1:
      args.append(raw_input(
@@ -41,7 +41,7 @@ def split_interface(args):
      args.append(raw_input(
              "How many parts should be required to reconstitute your " + \
             "key? (1-%d): " % int(args[1])))
-   v = split.split(args[0],int(args[2]),int(args[1]))
+   v = bitcoin.split(args[0],int(args[2]),int(args[1]))
    print "Write down the key parts:"
    for i in v: print i
 
@@ -56,7 +56,7 @@ def reconstitute_interface(args):
         # The first time that we have information on k AND it's the user input
         # ting manually, print the "$1 total pieces required, $2 to go" string
         if len(p) > 0 and second:
-           k = (split.trial_and_error_decode(p[0]) / (256 ** 37)) % 256 - 147
+           k = (bitcoin.trial_and_error_decode(p[0]) / (256 ** 37)) % 256 - 147
            print "%d total pieces required, %d to go" % (k, k-len(p))
            second = False
         if first: print "Enter the key parts:"
@@ -68,21 +68,21 @@ def reconstitute_interface(args):
       # We have to do this at the end of the first round since the k
       # parameter might actually be 1, in which case we should end the
       # while loop after this immediately
-      k = (split.trial_and_error_decode(p[0]) / (256 ** 37)) % 256 - 147
+      k = (bitcoin.trial_and_error_decode(p[0]) / (256 ** 37)) % 256 - 147
    # Too many pieces inputted, don't interpret an extra piece as the base
    # parameter
    while len(args) > 0 and get_format(args[0]) == -1: args.pop(0)
    if len(args) == 0: args.append(raw_input(
                      "Please enter format: integer(10), hexadecimal(16) " + \
                      "or base58check wallet import format (58): "))
-   print split.reconstitute(p,get_format(args[0]))
+   print bitcoin.reconstitute(p,get_format(args[0]))
 
 def random_generate_interface(args):
    # Generates a random key
    if len(args) == 0: args.append(raw_input(
                       "Please enter format: integer(10), hexadecimal(16) " + \
                       "or base58check wallet import format (58): "))
-   print split.formatpk(random.randrange(2**256),get_format(args[0]))
+   print bitcoin.formatpk(random.randrange(2**256),get_format(args[0]))
 
 def generate_interface(args):
    # Generates a key from a seed
@@ -90,7 +90,7 @@ def generate_interface(args):
    if len(args) == 1: args.append(raw_input(
                       "Please enter format: integer(10), hexadecimal(16) " + \
                       "or base58check wallet import format (58): "))
-   print split.makepk(args[0],get_format(args[1]))
+   print bitcoin.makepk(args[0],get_format(args[1]))
 
 def change_format_interface(args):
    # Changes a key to the target format
@@ -98,7 +98,7 @@ def change_format_interface(args):
    if len(args) == 1: args.append(raw_input(
                      "Please enter format: integer(10), hexadecimal(16) " + \
                      "or base58check wallet import format (58): "))
-   print split.formatpk(args[0],get_format(args[1]))
+   print bitcoin.formatpk(args[0],get_format(args[1]))
 
 def main():
    root_interface(sys.argv[1:])
