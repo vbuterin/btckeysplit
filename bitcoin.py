@@ -28,11 +28,11 @@ def trial_and_error_decode(inp):
    if isinstance(inp,str):
       try: return int(inp)
       except: pass
-      for i in (range(32)+range(123,256)):
-         if chr(i) in [x for x in inp]:
+      for x in inp:
+         if ord(x) < 32 or ord(x) > 122:
             return decode(inp,256)
-      for i in 'GHIJKLMNOPQRSTUVWXYZghijklmnopqrstuvwxyz':
-         if i in [x for x in inp]:
+      for x in inp:
+         if (ord(x) > 70 and ord(x) <= 90) or ord(x) > 102:
             return base58export(inp)
       return decode(inp,16)
    return inp
